@@ -2,7 +2,8 @@
 -- Table `DB_USER`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS DB_USERS(
-    USR_DOCUMENT                    VARCHAR(75)     PRIMARY KEY, -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+    USR_NUMDOC                    	INTEGER     	NOT NULL, -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+	USR_DOCTYPE						VARCHAR(4)		NOT NULL,
     USR_NAME                        VARCHAR(100)    NOT NULL,
     USR_LASTNAME                    VARCHAR(100)    NOT NULL,
     USR_ROLE                        VARCHAR(50)     NOT NULL, -- TODO -> Crear un check para este tipo de dato ("USER", "ADMIN", "AUDITOR")
@@ -15,7 +16,8 @@ CREATE TABLE IF NOT EXISTS DB_USERS(
 -- Table `DB_LOGIN`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS DB_LOGIN(
-    USR_DOCUMENT                    VARCHAR(75)     PRIMARY KEY, -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+    USR_NUMDOC                    	INTEGER     	NOT NULL, -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+	USR_DOCTYPE						VARCHAR(4)		NOT NULL,
     USR_USERNAME                    VARCHAR(75)     NOT NULL,
     USR_EMAIL                       VARCHAR(150)    NOT NULL,
     USR_PASSWORD                    VARCHAR(300)    NOT NULL
@@ -29,8 +31,8 @@ CREATE TABLE IF NOT EXISTS DB_TRANSACTIONS(
     TR_ID                 SERIAL              PRIMARY KEY,
     TR_DATE               DATE                NOT NULL,
     TR_DESTINY_BANK       INTEGER             NOT NULL,
-    TR_DESTINY_ACCOUNT    VARCHAR(300)        NOT NULL,
-    TR_SOURCE_ACCOUNT     VARCHAR(300)        NOT NULL,
+    TR_DESTINY_ACCOUNT    INTEGER	          NOT NULL,
+    TR_SOURCE_ACCOUNT     INTEGER             NOT NULL,
     AMOUNT                DOUBLE PRECISION    NOT NULL
 );
 
@@ -38,12 +40,13 @@ CREATE TABLE IF NOT EXISTS DB_TRANSACTIONS(
 -- Table `DB_ACCOUNTS`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS DB_ACCOUNTS(
-    ACC_ID                 SERIAL               PRIMARY KEY,
-    ACC_NUMBER             VARCHAR(300)         NOT NULL,
-    ACC_CREATION_DATE      DATE                 NOT NULL,
-    ACC_BALANCE            DOUBLE PRECISION     NOT NULL,
-    ACC_TYPE               VARCHAR(75)          NOT NULL, -- TODO -> Crear un check para este tipo de dato ('AHORROS', 'CORRIENTE')
-    USR_DOCUMENT           VARCHAR(75)          NOT NULL -- TODO -> Crear un check para este tipo de dato ("CC", "TI", "CE", "PS")
+    ACC_ID                 	SERIAL              PRIMARY KEY,
+    ACC_NUMBER             	VARCHAR(300)        NOT NULL,
+    ACC_CREATION_DATE      	DATE                NOT NULL,
+    ACC_BALANCE            	DOUBLE PRECISION    NOT NULL,
+    ACC_TYPE               	VARCHAR(75)         NOT NULL, -- TODO -> Crear un check para este tipo de dato ('AHORROS', 'CORRIENTE')
+    USR_NUMDOC              INTEGER     		NOT NULL, -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+	USR_DOCTYPE				VARCHAR(4)			NOT NULL,
 );
 
 -- -----------------------------------------------------
@@ -51,7 +54,7 @@ CREATE TABLE IF NOT EXISTS DB_ACCOUNTS(
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS DB_OVERDRAWS(
     OVD_ID                 SERIAL               PRIMARY KEY,
-    ACC_NUMBER             VARCHAR(300)         NOT NULL,
+    ACC_NUMBER             INTEGER		        NOT NULL,
     OVD_CREATION_DATE      DATE                 NOT NULL,
     OVD_IS_AUTHORIZED      BOOLEAN              NOT NULL -- TODO -> Crear un trigger porque cuando se cree un overdraw debe crearse como NO autorizado (también se puede hacer en el back)
 );
