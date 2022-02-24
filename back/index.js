@@ -13,8 +13,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
-
-// router(app);
+router(app);
 
 // $
 app.get('/api/login', (req, res) => {
