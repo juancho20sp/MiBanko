@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -80,8 +79,6 @@ class UserService {
 
 
     } catch(err) {
-      console.log(err)
-
       result = {
         message: 'Something went wrong'
       }
