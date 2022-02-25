@@ -11,6 +11,7 @@ const service= new AccountsService();
  * account: {
  *    document_number: Integer
  *    document_type: String
+ *    acc_type: String
  * }
  */
  router.get('/getAccount', async (req, res) => {
