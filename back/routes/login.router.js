@@ -50,6 +50,29 @@ router.post('/', async (req, res) => {
 // TODO -> CREAR OTRA RUTA DEL LOGIN QUE REGENERE EL TOKEN
 // RECIBE EL TOKEN ANTERIOR
 // RETORNA UNO NUEVO
+/**
+ * {
+ *    email: String
+ *    password: String
+ * }
+ */
+router.get('/', (req, res) => {
+  const user = req.body.user;
+  console.log(user);
+  // Create and sign the token
+  // TODO -> agregar la sal a .env
+  // TODO -> agregar tiempo del token al .env
+  jwt.sign({ user }, 'mySalt', { expiresIn: '60s' }, (err, token) => {
+    res.status(200).json({
+      user: {
+        ...user,
+        token:token
+      }
+    });
+  })
+
+})
+
 
 
 module.exports = router;
