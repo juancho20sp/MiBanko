@@ -38,48 +38,28 @@ router.post('/', async (req, res) => {
 
   const userToken = await service.createToken(user);
 
-  console.log(userToken)
-
   res.status(200).json(userToken);
 })
 
-// TODO -> CREAR OTRA RUTA DEL LOGIN QUE REGENERE EL TOKEN
-// RECIBE EL TOKEN ANTERIOR
-// RETORNA UNO NUEVO
 /**
  * {
  *    token
  * }
  */
-router.post('/refreshToken', (req, res) => {
+router.post('/refreshToken', async (req, res) => {
   const token = req.body.token;
 
-  jwt.verify(token, process.env.JWT_SALT, (err, authData) => {
-    if (err) {
-      res.status(403).json({
-        message: 'El token es inválido'
-      })
-    }
+  // $
+  console.log(token)
 
+  try {
+    const newToken = await service.refreshToken(token);
 
-  })
+    res.status(200).json(newToken);
 
-
-
-
-  console.log(user);
-  // Create and sign the token
-  // TODO -> agregar la sal a .env
-  // TODO -> agregar tiempo del token al .env
-  jwt.sign({ user }, process.env.JWT_SALT, { expiresIn: '60s' }, (err, token) => {
-    res.status(200).json({
-      user: {
-        ...user,
-        token:token
-      }
-    });
-  })
-
+  } catch(errMsg) {
+    res.status(403).json(errMsg)
+  }
 })
 
 

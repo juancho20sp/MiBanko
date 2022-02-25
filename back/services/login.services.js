@@ -34,17 +34,24 @@ class LoginService {
 
   // Refresh the user token
   refreshToken(token) {
-    jwt.verify(token, process.env.JWT_SALT, (err, authData) => {
-      if (err) {
-        return {
-          message: 'El token es inválido'
+    return new Promise((res, rej) => {
+      jwt.verify(token, process.env.JWT_SALT, (err, authData) => {
+        if (err) {
+          rej({
+            message: 'El token es inválido'
+          })
         }
-      }
 
-      return {
-        ...authData
-      }
+        const newToken = this.createToken(authData.user);
+
+        newToken.then(response => {
+          res({
+            ...response
+          })
+        })
+      })
     })
+
   }
 }
 
