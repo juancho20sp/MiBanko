@@ -18,27 +18,29 @@ const service = new LoginService();
  * }
  */
 router.post('/', async (req, res) => {
-  // Esto es un llamado a la BD
-  // TODO -> llamar al servicio con los datos el usuario
-  // TODO -> verificar si existe
+  try {
+    // SIMULAR RESPUESTA DE LA BD
+    const user = {
+      // TODO lo del LOGIN (menos la contraseña)
+      // DB_USER (name, lastname, role)
+      documentNumber: 123456,
+      documentType: 'CC',
+      username: 'juancho20sp',
+      email: 'juan@email.com',
+      name: 'Juan David',
+      lastname: 'Murillo',
+      role: 'ADMIN' // TODO -> cuadrar en el back guardarlo en mayúscula
+    }
 
-  // SIMULAR RESPUESTA DE LA BD
-  const user = {
-    // TODO lo del LOGIN (menos la contraseña)
-    // DB_USER (name, lastname, role)
-    documentNumber: 123456,
-    documentType: 'CC',
-    username: 'juancho20sp',
-    email: 'juan@email.com',
-    name: 'Juan David',
-    lastname: 'Murillo',
-    role: 'ADMIN' // TODO -> cuadrar en el back guardarlo en mayúscula
+
+    const userToken = await service.createToken(user);
+
+    res.status(200).json(userToken);
+  } catch(err) {
+    res.status(500).json({
+      message: 'Something went wrong on the server'
+    })
   }
-
-
-  const userToken = await service.createToken(user);
-
-  res.status(200).json(userToken);
 })
 
 /**
@@ -48,9 +50,6 @@ router.post('/', async (req, res) => {
  */
 router.post('/refreshToken', async (req, res) => {
   const token = req.body.token;
-
-  // $
-  console.log(token)
 
   try {
     const newToken = await service.refreshToken(token);
