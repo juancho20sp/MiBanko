@@ -30,5 +30,27 @@ const service= new AccountsService();
       })
     }
   })
+  
+/**
+ * account: {
+ *    document_number: Integer
+ *    document_type: String
+ * }
+ */
+ router.get('/getAccount', async (req, res) => {
+    try {
+      const data = req.body.account;
+  
+  
+      const accountData = await service.getAccount(data);
+  
+      res.status(200).json(accountData);
+    } catch(err) {
+      res.status(500).json({
+        message: 'Something went wrong on the server'
+      })
+    }
+  })
 
+  
 module.exports= router;

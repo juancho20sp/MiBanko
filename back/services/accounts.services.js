@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const {
     dbClient,
-    Client
+    Client,
   } = require('../database/database');
 
 class AccountsService{
@@ -13,22 +13,22 @@ class AccountsService{
         // Create DB connection
         const db = new Client(dbClient);
         let result;
-    
+
         try {
-          await db.connect();
-    
-          const {
+            await db.connect();
+
+            const {
             acc_number,
             acc_balance,
             acc_type,
             document_number,
             document_type,
-          } = accountData;
-    
-    
-          const creationDate = new Date().toISOString().slice(0, 10);
-    
-          result = await db.query(`INSERT INTO DB_ACCOUNTS(ACC_NUMBER, ACC_CREATION_DATE, ACC_BALANCE, ACC_TYPE, USR_NUMDOC, USR_DOCTYPE) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, 
+            } = accountData;
+
+
+            const creationDate = new Date().toISOString().slice(0, 10);
+
+            result = await db.query(`INSERT INTO DB_ACCOUNTS(ACC_NUMBER, ACC_CREATION_DATE, ACC_BALANCE, ACC_TYPE, USR_NUMDOC, USR_DOCTYPE) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, 
             [acc_number,
             creationDate,
             acc_balance,
@@ -36,20 +36,67 @@ class AccountsService{
             document_number,
             document_type.toUpperCase()]);
 
-            //WHERE EXISTS (SELECT USR_NUMDOC, USR_DOCTYPE FROM DB_USERS WHERE (DB_USERS.USR_NUMDOC = $5 AND DB_USERS.USR_DOCTYPE = $6))
-    
-          result = result.rows[0];
-    
+            result = result.rows[0];
+
         } catch(err) {
-          result = {
+            result = {
             message: 'Something went wrong'
-          }
+            }
         } finally {
+            await db.end();
+        }
+
+        return result;
+    }
+      
+      
+    async getAccount(accountData){
+        const db= new Client(dbClient);
+        let result;
+
+        try{
+            await db.connect();
+
+            const{
+                document_number,
+                document_type
+            }= accountData;
+
+            result= await db.query(`SELECT * FROM DB_ACCOUNTS WHERE (DB_ACCOUNTS.USR_NUMDOC = $1 AND DB_ACCOUNTS.USR_DOCTYPE = $2)`, [document_number,document_type.toUpperCase()]);
+
+            result= result.rows;
+
+        }catch(err){
+            result = {
+                message: 'Something went wrong database'
+            }
+        }finally{
+            await db.end();
+        }
+
+        return result;
+    }
+
+    async getAllAccounts(){
+        const db= new Client(dbClient);
+        let result;
+        try{
+            await db.connect();
+
+          result= await db.query(`SELECT * FROM DB_ACCOUNTS`);
+
+          result= result.rows;
+
+        }catch(err){
+            result = {
+              message: 'Something went wrong'
+            }
+        }finally{
           await db.end();
         }
-    
+
         return result;
-      }
+    }
 }
 
 module.exports= AccountsService;
