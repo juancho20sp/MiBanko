@@ -40,7 +40,7 @@ class AccountsService{
 
         } catch(err) {
             result = {
-            message: 'Something went wrong'
+                message: 'Something went wrong creating the account'
             }
         } finally {
             await db.end();
@@ -59,16 +59,17 @@ class AccountsService{
 
             const{
                 document_number,
-                document_type
+                document_type,
+                acc_type
             }= accountData;
 
-            result= await db.query(`SELECT * FROM DB_ACCOUNTS WHERE (DB_ACCOUNTS.USR_NUMDOC = $1 AND DB_ACCOUNTS.USR_DOCTYPE = $2)`, [document_number,document_type.toUpperCase()]);
+            result= await db.query(`SELECT * FROM DB_ACCOUNTS WHERE (DB_ACCOUNTS.USR_NUMDOC = $1 AND DB_ACCOUNTS.USR_DOCTYPE = $2 AND DB_ACCOUNTS.ACC_TYPE = $3)`, [document_number, document_type.toUpperCase(), acc_type.toUpperCase()]);
 
             result= result.rows;
 
         }catch(err){
             result = {
-                message: 'Something went wrong database'
+                message: 'Something went wrong getting the account'
             }
         }finally{
             await db.end();
@@ -78,21 +79,54 @@ class AccountsService{
     }
 
     async getAllAccounts(){
+
+        // database connection
         const db= new Client(dbClient);
         let result;
+
         try{
             await db.connect();
 
-          result= await db.query(`SELECT * FROM DB_ACCOUNTS`);
+            result= await db.query(`SELECT * FROM DB_ACCOUNTS`);
 
-          result= result.rows;
+            result= result.rows;
 
         }catch(err){
             result = {
-              message: 'Something went wrong'
+                message: 'Something went wrong getting all accounts'
             }
         }finally{
           await db.end();
+        }
+
+        return result;
+    }
+
+    async updateAccount(accountData){
+
+        //database connection
+        const db= new Client(dbClient);
+        let result;
+
+        try{
+            await db.connect();
+
+            const{
+                document_number,
+                document_type,
+                acc_type,
+                newAcc_balance
+            }= accountData;
+
+            result= await db.query(`UPDATE DB_ACCOUNTS SET ACC_BALANCE = $1 WHERE (DB_ACCOUNTS.USR_NUMDOC = $2 AND DB_ACCOUNTS.USR_DOCTYPE = $3 AND DB_ACCOUNTS.ACC_TYPE = $4) RETURNING *`, [newAcc_balance, document_number, document_type.toUpperCase(), acc_type.toUpperCase()]);
+
+            result= result.rows[0];
+        }catch(err){
+            result = {
+                message: 'Something went wrong updating account'
+            }
+        }finally{
+            await db.end();
         }
 
         return result;

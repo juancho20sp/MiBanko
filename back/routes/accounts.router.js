@@ -6,6 +6,39 @@ const AccountsService= require('../services/accounts.services');
 const router= express.Router();
 const service= new AccountsService();
 
+  
+/**
+ * account: {
+ *    document_number: Integer
+ *    document_type: String
+ * }
+ */
+ router.get('/getAccount', async (req, res) => {
+    try {
+      const data = req.body.account;
+  
+  
+      const accountData = await service.getAccount(data);
+  
+      res.status(200).json(accountData);
+    } catch(err) {
+      res.status(500).json({
+        message: 'Something went wrong on the server'
+      })
+    }
+  })
+
+  router.get('/getAllAccounts', async(req, res) => {
+    try {
+      const users = await service.getAllAccounts();
+  
+      res.status(200).json(users);
+    } catch(err) {
+      res.status(500).json({
+        message: 'Something went wrong on the server'
+      })
+    }
+  })
 
 /**
  * account: {
@@ -30,19 +63,20 @@ const service= new AccountsService();
       })
     }
   })
-  
+
 /**
  * account: {
  *    document_number: Integer
  *    document_type: String
+ *    newAcc_balance: Integer
  * }
  */
- router.get('/getAccount', async (req, res) => {
+ router.post('/updateAccount', async (req, res) => {
     try {
       const data = req.body.account;
   
   
-      const accountData = await service.getAccount(data);
+      const accountData = await service.updateAccount(data);
   
       res.status(200).json(accountData);
     } catch(err) {
@@ -52,5 +86,4 @@ const service= new AccountsService();
     }
   })
 
-  
 module.exports= router;
