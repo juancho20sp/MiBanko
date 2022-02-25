@@ -51,7 +51,7 @@ function verifyIsClientToken(req, res, next) {
       })
     }
 
-    if (authData.role !== 'CLIENT'){
+    if (authData.user.role !== 'CLIENT'){
       res.status(403).json({
         message: 'El token no pertenece al rol adecuado'
       })
@@ -71,7 +71,7 @@ function verifyIsAuditorToken(req, res, next) {
       })
     }
 
-    if (authData.role !== 'AUDITOR'){
+    if (authData.user.role !== 'AUDITOR'){
       res.status(403).json({
         message: 'El token no pertenece al rol adecuado'
       })
