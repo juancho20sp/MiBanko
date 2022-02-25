@@ -33,38 +33,25 @@ app.get('/api/login', (req, res) => {
 });
 
 // $
-app.post('/api/posts', verifyToken, (req, res) => {
+// app.post('/api/posts', verifyToken, (req, res) => {
 
-  jwt.verify(req.token, 'mySecretKey', (err, authData) => {
-    if (err) {
-      res.send(403);
-    }
+//   jwt.verify(req.token, 'mySecretKey', (err, authData) => {
+//     if (err) {
+//       res.send(403);
+//     }
 
-    res.json({
-      message: 'Post created',
-      authData
-    })
-  })
+//     res.json({
+//       message: 'Post created',
+//       authData
+//     })
+//   })
 
-  res.json({
-    message: 'Post created'
-  });
-});
+//   res.json({
+//     message: 'Post created'
+//   });
+// });
 
-// $
-// Esto es un middleware
-function verifyToken(req, res, next) {
-  const bearerHeader = req.headers['authorization'];
 
-  if (typeof bearerHeader !== 'undefined') {
-    const token = bearerHeader.split(' ')[1];
-    req.token = token;
-    next();
-  } else {
-    res.sendStatus(403);
-  }
-
-}
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);

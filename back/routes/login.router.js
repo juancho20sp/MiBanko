@@ -16,15 +16,17 @@ const service = new LoginService();
 router.post('/', async (req, res) => {
   try {
     // SIMULAR RESPUESTA DE LA BD
+    // TODO -> del request tomar el document_number y el document_type y con eso, consultar a traves del servicio de usuarios si ese usuario existe y nos traemos sus datos
+    //    NOTA: Esto debe escalarse para hacer un JOIN con
+    //    la tabla login
     const user = {
       // TODO lo del LOGIN (menos la contraseña)
       // DB_USER (name, lastname, role)
-      documentNumber: 123456,
-      documentType: 'CC',
-      username: 'juancho20sp',
+      document_number: 123456,
+      document_type: 'CC',
+      user_name: 'juancho20sp',
       email: 'juan@email.com',
-      name: 'Juan David',
-      lastname: 'Murillo',
+      user_lastname: 'Murillo',
       role: 'ADMIN' // TODO -> cuadrar en el back guardarlo en mayúscula
     }
 
