@@ -3,13 +3,9 @@ const express = require('express');
 // Services
 const LoginService = require('../services/login.services');
 
-// TODO -> importar los servicios
-
 const router = express.Router();
 const service = new LoginService();
 
-// /api/v1/login/create
-// /api/v1/login/logout
 
 /**
  * {

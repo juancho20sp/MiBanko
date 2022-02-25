@@ -1,7 +1,8 @@
 const express = require('express');
 
 const {
-  loginRouter
+  loginRouter,
+  userRouter
 } = require('./routers');
 
 function router(app) {
@@ -11,6 +12,7 @@ function router(app) {
   app.use('/api/v1', router);
 
   router.use('/login', loginRouter);
+  router.use('/users', userRouter)
 }
 
 module.exports = router;
