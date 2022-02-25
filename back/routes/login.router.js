@@ -1,10 +1,12 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+
+// Services
+const LoginService = require('../services/login.services');
 
 // TODO -> importar los servicios
 
 const router = express.Router();
-// TODO -> create service
+const service = new LoginService();
 
 // /api/v1/login/create
 // /api/v1/login/logout
@@ -33,18 +35,12 @@ router.post('/', async (req, res) => {
     role: 'ADMIN' // TODO -> cuadrar en el back guardarlo en mayúscula
   }
 
-  // Create and sign the token
-  // TODO -> agregar la sal a .env
-  // TODO -> agregar tiempo del token al .env
-  jwt.sign({ user }, 'mySalt', { expiresIn: '60s' }, (err, token) => {
-    res.status(200).json({
-      user: {
-        ...user,
-        token
-      }
-    });
-  })
 
+  const userToken = await service.createToken(user);
+
+  console.log(userToken)
+
+  res.status(200).json(userToken);
 })
 
 // TODO -> CREAR OTRA RUTA DEL LOGIN QUE REGENERE EL TOKEN
@@ -52,17 +48,30 @@ router.post('/', async (req, res) => {
 // RETORNA UNO NUEVO
 /**
  * {
- *    email: String
- *    password: String
+ *    token
  * }
  */
-router.get('/', (req, res) => {
-  const user = req.body.user;
+router.post('/refreshToken', (req, res) => {
+  const token = req.body.token;
+
+  jwt.verify(token, process.env.JWT_SALT, (err, authData) => {
+    if (err) {
+      res.status(403).json({
+        message: 'El token es inválido'
+      })
+    }
+
+
+  })
+
+
+
+
   console.log(user);
   // Create and sign the token
   // TODO -> agregar la sal a .env
   // TODO -> agregar tiempo del token al .env
-  jwt.sign({ user }, 'mySalt', { expiresIn: '60s' }, (err, token) => {
+  jwt.sign({ user }, process.env.JWT_SALT, { expiresIn: '60s' }, (err, token) => {
     res.status(200).json({
       user: {
         ...user,
