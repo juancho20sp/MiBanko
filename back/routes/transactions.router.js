@@ -9,6 +9,7 @@ const service = new TransctionsService();
 router.post('/createTransactionInter', async (req, res) => {
   try {
     const data = req.body.transactioninter;
+    
     const transactioninterData = await service.createTransactionInter(data);
 
     res.status(200).json(transactioninterData);
@@ -41,3 +42,5 @@ router.get('/getTransactionsDetail', async(req, res) => {
     })
   }
 })
+
+module.exports = router;
