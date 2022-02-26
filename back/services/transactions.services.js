@@ -15,7 +15,6 @@ class TransctionsService{
     // Create DB connection
     const db = new Client(dbClient);
     let result;
-    let check;
 
     try {
       await db.connect();
@@ -35,7 +34,7 @@ class TransctionsService{
       const status_overdraw = null;
 
 
-      check = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
+      let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
         ndoc,
         destiny_account
       ]);
@@ -45,15 +44,15 @@ class TransctionsService{
 
       source=source.rows[0];
       
-      if(check.rowCount>0){
+      if(destiny.rowCount>0){
 
-        check= check.rows[0];
+        destiny= destiny.rows[0];
 
         if(overdraw){
           const status ="PENDIENTE";
           result=await db.query(`INSERT INTO DB_TRANSACTIONS_INTRA(tr_date, tr_destiny_bank, tr_destiny_account, tr_source_account, amount, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [creationDate,
             destiny_bank,
-            check.acc_id,
+            destiny.acc_id,
             source.acc_id,
             amount,
             status
@@ -69,13 +68,16 @@ class TransctionsService{
           const status ="APROBADA";
           result=await db.query(`INSERT INTO DB_TRANSACTIONS_INTRA(tr_date, tr_destiny_bank, tr_destiny_account, tr_source_account, amount, estatus) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [creationDate,
             destiny_bank,
-            check.acc_id,
+            destiny.acc_id,
             source.acc_id,
             amount,
             status
           ]);
           await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance-($1) WHERE acc_id=($2)`, [amount,
             source.acc_id
+          ]);
+          await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance+($1) WHERE acc_id=($2)`, [amount,
+            destiny.acc_id
           ]);
 
         }
@@ -99,7 +101,7 @@ class TransctionsService{
     const db = new Client(dbClient);
     let numTransactions = 0;
     let valueTransactions = 0;
-    
+
     try {
       await db.connect();
 
