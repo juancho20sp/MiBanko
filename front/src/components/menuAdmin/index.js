@@ -1,8 +1,18 @@
-import React from "react";
+import {React,useState,useEffect} from "react";
 import styled from "styled-components";
 import { Link as LinkR } from 'react-router-dom';
-
+import axios from 'axios';
 export function MenuAdmin () {
+	const [ totalBalance, setTotalBalance] = useState(0);
+	useEffect(() => {
+	  let location = 'api/v1/account';
+		  axios.post(window.$dir+location+`/getTotalBalance`)
+			  .then((response) => {
+				  if(response && response.balance){
+					  setTotalBalance(0)
+				  }
+			  })
+	  }, [])
 	return (	
 	<RootWrapperHomeAdmin>
   <Rectangle5Stroke xmlns="http://www.w3.org/2000/svg">
@@ -15,14 +25,14 @@ export function MenuAdmin () {
       Menú Principal
     </MenúPrincipal>
   <TodoElDineroEnElBanco123436>
-      Todo el dinero en el banco: $1234.36
+      Todo el dinero en el banco: {totalBalance}
     </TodoElDineroEnElBanco123436>
   <Rectangle3/>
   <Rectangle6/>
   <Rectangle8/>
   <Rectangle7/>
   <Rectangle9/>
-  <EnviarDinero to={'/'}>
+  <EnviarDinero to={'/enviarDinero'}>
       Enviar dinero
     </EnviarDinero>
   <VerTodosLosMovimientos to={'/'}>
@@ -31,7 +41,7 @@ export function MenuAdmin () {
   <VerTotalDeTransferencias to={'/'}>
       Ver total de transferencias
     </VerTotalDeTransferencias>
-  <ModificarDineroDeUsuario to={'/'}>
+  <ModificarDineroDeUsuario to={'/modificarDinero'}>
       Modificar dinero de usuario
     </ModificarDineroDeUsuario>
   <AutorizarSobregiros to={'/'}>

@@ -1,9 +1,24 @@
-import React from 'react'
+import {React,useEffect,useState} from 'react'
+import axios from 'axios';
 import {
-  RootWrapperHomeUsuario, VerMisMovimientosBtn, EnviarDineroBtn, TodoMiDinero123436, MenúPrincipal, SobregirarBtn,
+  RootWrapperHomeUsuario, VerMisMovimientosBtn, EnviarDineroBtn, TodoMiDinero, MenúPrincipal, SobregirarBtn,
   Rectangle3, Rectangle5, Rectangle6, Rectangle7,Rectangle8, Rectangle5Stroke, Salir
 } from './menuPrincipalElements.js';
-const MenuUsuario = () => {
+const MenuUsuario = (userData) => {
+  const [ balance, setBalance] = useState(0);
+  useEffect(() => {
+    let location = 'api/v1/account';
+    let body={
+        user_doctype: userData.user_doctype,
+        user_numdoc: userData.user_numdoc,
+    }
+		axios.post(window.$dir+location+`/getAccountBalance`,body)
+            .then((response) => {
+                if(response && response.balance){
+                    setBalance(0)
+                }
+            })
+	}, [userData])
   return (
     <div>
       <RootWrapperHomeUsuario>
@@ -16,14 +31,14 @@ const MenuUsuario = () => {
         <MenúPrincipal>
           Menú Principal
         </MenúPrincipal>
-        <TodoMiDinero123436>
-          Todo mi dinero: $1234.36
-        </TodoMiDinero123436>
+        <TodoMiDinero>
+          Todo mi dinero: {balance}
+        </TodoMiDinero>
         <Rectangle3 />
         <Rectangle6 />
         <Rectangle7 />
         <Rectangle8 />
-        <EnviarDineroBtn to={'/'}>
+        <EnviarDineroBtn to={'/enviarDinero'}>
           Enviar dinero
         </EnviarDineroBtn>
         <VerMisMovimientosBtn to={'/'}>
