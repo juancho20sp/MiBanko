@@ -35,7 +35,7 @@ left: 557px;
 top: 89px;
 `;
 
-export const TodoMiDinero123436 = styled.span`
+export const TodoMiDinero = styled.span`
 color: rgba(0, 0, 0, 1);
 text-overflow: ellipsis;
 font-size: 45px;
