@@ -6,13 +6,13 @@ const router = express.Router();
 const service = new TransctionsService();
 
 
-router.post('/createTransactionInter', async (req, res) => {
+router.post('/createTransactionIntra', async (req, res) => {
   try {
-    const data = req.body.transactioninter;
-    
-    const transactioninterData = await service.createTransactionInter(data);
+    const data = req.body.transactionIntra;
 
-    res.status(200).json(transactioninterData);
+    const transactionintraData = await service.createTransactionIntra(data);
+
+    res.status(200).json(transactionintraData);
   } catch(err) {
     res.status(500).json({
       message: 'Something went wrong on the server'

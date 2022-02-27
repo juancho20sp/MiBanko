@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+//const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
@@ -11,14 +11,13 @@ const {
 class TransctionsService{
   constructor(){}
 
-  async createTransactionInter(transactioninterData) {
+  async createTransactionIntra(transactionintraData) {
     // Create DB connection
     const db = new Client(dbClient);
     let result;
 
     try {
       await db.connect();
-
       const {
         destiny_account,
         source_acc,
@@ -27,44 +26,48 @@ class TransctionsService{
         ndoc,
         overdraw,
         amount_overdraw
-      } = transactioninterData;
-
+      } = transactionintraData;
       const creationDate = new Date().toISOString().slice(0, 10);
       const destiny_bank=1;
-      const status_overdraw = null;
-
 
       let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
         ndoc,
         destiny_account
       ]);
-      
+
       let source = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE ACC_NUMBER=($1)`, [source_acc
       ]);
 
       source=source.rows[0];
-      
+
       if(destiny.rowCount>0){
 
         destiny= destiny.rows[0];
 
         if(overdraw){
+
+          console.log("sssss")
           const status ="PENDIENTE";
-          result=await db.query(`INSERT INTO DB_TRANSACTIONS_INTRA(tr_date, tr_destiny_bank, tr_destiny_account, tr_source_account, amount, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [creationDate,
+          const tasaction_type ="INTRA";
+          const status_overdraw = null;
+          result=await db.query(`INSERT INTO DB_TRANSACTIONS_INTRA(tr_date, tr_destiny_bank, tr_destiny_account, tr_source_account, amount, estatus) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [creationDate,
             destiny_bank,
             destiny.acc_id,
             source.acc_id,
             amount,
             status
           ]);
-          await db.query(`INSERT INTO db_overdraws(acc_number, ovd_creation_date, ovd_is_authorized, amount) VALUES($1, $2, $3, $4) RETURNING *`, [source_acc,
+          result=result.rows[0];
+          await db.query(`INSERT INTO db_overdraws(ovd_creation_date, ovd_is_authorized, amount, tr_type, tr_id) VALUES($1, $2, $3, $4, $5) RETURNING *`, [
             creationDate,
             status_overdraw,
-            amount_overdraw
+            amount_overdraw,
+            tasaction_type,
+            result.tr_id
           ]);
         }
         else{
-          
+
           const status ="APROBADA";
           result=await db.query(`INSERT INTO DB_TRANSACTIONS_INTRA(tr_date, tr_destiny_bank, tr_destiny_account, tr_source_account, amount, estatus) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [creationDate,
             destiny_bank,
@@ -73,19 +76,19 @@ class TransctionsService{
             amount,
             status
           ]);
+
           await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance-($1) WHERE acc_id=($2)`, [amount,
             source.acc_id
           ]);
           await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance+($1) WHERE acc_id=($2)`, [amount,
             destiny.acc_id
           ]);
-
+          result = result.rows[0];
         }
       }
-    
-      result = result.rows[0];
 
     } catch(err) {
+      console.log(err)
       result = {
         message: 'Something went wrong database'
       }
@@ -124,7 +127,7 @@ class TransctionsService{
     };
   }
 
-  async getTransactionsDetail() {
+  /*async getTransactionsDetail() {
     // Create DB connection
     const db = new Client(dbClient);
     let result;
@@ -147,7 +150,7 @@ class TransctionsService{
       NumTransactions: {numTransactions},
       ValueTransactions: {valueTransactions}
     };
-  }
+  }*/
 
 }
 
