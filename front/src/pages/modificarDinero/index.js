@@ -1,52 +1,124 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Swal from "sweetalert2";
 
-export function ModificarDinero () {
-	return (	
-	<RootWrapperModificarDinero>
-    <ModificarDineroDeUsuario>
-      Modificar dinero de usuario
-    </ModificarDineroDeUsuario>
-  <Rectangle11/>
-  <Rectangle12/>
-  <NombreDeUsuario>
-      Nombre de usuario
-    </NombreDeUsuario>
-  <Ellipse1/>
-  <Line1/>
-  <DineroDelUsuario123436>
-      Dinero del usuario: $1234.36
-    </DineroDelUsuario123436>
-  <Group3>
-      <Group1>
-        <Ellipse2/>
-      <Consignar>
-          Consignar
-        </Consignar>
-      </Group1>
-    <Group2>
-        <Ellipse2_0001/>
-      <Retirar>
-          Retirar
-        </Retirar>
-      </Group2>
-    </Group3>
-  <Rectangle6/>
-  <Rectangle13/>
-  <_123436>
-       $1234.36
-    </_123436>
-  <Valor>
-      Valor
-    </Valor>
-  <Rectangle10 xmlns="http://www.w3.org/2000/svg">
-      <path fill="rgba(196, 196, 196, 0.3)" d="M0 18.8125C0 8.42264 9.78856 0 21.8634 0L682.137 0C694.211 0 704 8.42264 704 18.8125L704 583.188C704 593.577 694.211 602 682.137 602L21.8634 602C9.78858 602 0 593.577 0 583.188L0 18.8125Z"/>
-    </Rectangle10>
-  <RealizarTransacción>
-      Realizar transacción
-    </RealizarTransacción>
-  </RootWrapperModificarDinero>	
-)
+export function ModificarDinero(userData) {
+	let history = useNavigate();
+	const [users, setUsers] = useState([" "]);
+	const [currentUser, setCurrentUser] = useState();
+	const [currentUserBalance, setCurrentUserBalance] = useState(0);
+	const [selectedBx, setBx] = useState('');
+	useEffect(() => {
+		let location = 'api/v1/users';
+		axios.get(window.$dir + location + `/getAllUsers`)
+			.then((response) => {
+				console.log(response.data);
+				let usersArray = [];
+				for (let i = 1; i < Object.keys(response.data).length; i++) {
+					console.log("res2");
+					usersArray.push(response.data[i]);
+				}
+				setUsers(usersArray);
+			})
+	}, [userData])
+	const handleSubmit =(event) =>{
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		let body={
+			document_type: currentUser.usr_doctype,
+			document_number: currentUser.usr_numdoc,
+			type_transaction: selectedBx,
+			value:  data.get('valor')
+		}
+		console.log(body);
+		//history("/menuUsuario");
+		let location = 'api/v1/admin';
+		axios.get(window.$dir + location + `/changeMoneyUser`,body)
+			.then((response) => {
+				console.log(response.status);
+				console.log(response.data);
+				if (response.status === 200) {
+					Swal.fire(
+						'Modificado correctamente',
+						'success'
+						);
+				} else {
+				Swal.fire("Something is Wrong :(!", "try again later", "error");
+				}     
+			})
+	}
+	const handleCurrentUser =(e) =>{
+		setCurrentUser(users[e.target.value]);
+		let body ={
+
+		}
+		let location = 'api/v1/users';
+		axios.get(window.$dir + location + `/getAccountBalance`,body)
+			.then((response) => {
+				if( response && response.balance){
+					setCurrentUserBalance(response.balance);
+				}
+			})
+	}
+	return (
+		<div className='form-content'>
+        <form onSubmit={handleSubmit} className='form' noValidate>
+		<RootWrapperModificarDinero>
+			<ModificarDineroDeUsuario>
+				Modificar dinero de usuario
+			</ModificarDineroDeUsuario>
+			<Rectangle11 />
+			<Rectangle12 />
+			<Rectangle10 xmlns="http://www.w3.org/2000/svg">
+				<path fill="rgba(196, 196, 196, 0.3)" d="M0 18.8125C0 8.42264 9.78856 0 21.8634 0L682.137 0C694.211 0 704 8.42264 704 18.8125L704 583.188C704 593.577 694.211 602 682.137 602L21.8634 602C9.78858 602 0 593.577 0 583.188L0 18.8125Z" />
+			</Rectangle10>
+			<NombreDeUsuario name="nombreUsuario"  onChange={(e) => handleCurrentUser(e)}>
+				<option value="" hidden>seleccione un Usuario</option>
+				{users.map((element,index) => {
+						return (
+							<option 
+								key={index} 
+								value={index}
+								>{element.usr_name + element.usr_lastname  }</option>
+						);
+					})}
+			</NombreDeUsuario>
+			<Ellipse1 />
+			<Line1 />
+			<DineroDelUsuario>
+				Dinero del usuario: {currentUserBalance}
+			</DineroDelUsuario>
+			<Group3>
+				<Group1>
+					<RadioConsignar name="consignar" type="radio"  checked={"consignar" === selectedBx}
+                     onChange={() => {setBx("consignar")} }   />
+					<Consignar>
+						Consignar
+					</Consignar>
+				</Group1>
+				<Group2>
+					<RadioRetirar name="retirar" type="radio" checked={"retirar" === selectedBx}
+                     onChange={() => {setBx("retirar")} }    />
+					<Retirar >
+						Retirar
+					</Retirar>
+				</Group2>
+			</Group3>
+			<Rectangle6 />
+			<Rectangle13 />
+			<ValorLabel >
+				Valor
+			</ValorLabel>
+			<Valor name="valor" type="number"/>
+			<RealizarTransacción>
+				Realizar transacción
+			</RealizarTransacción>
+		</RootWrapperModificarDinero>
+		</form>
+		</div>
+	)
 }
 
 const RootWrapperModificarDinero = styled.div`
@@ -87,9 +159,9 @@ const Rectangle12 = styled.div`
 	top: 182px;
 `;
 
-const NombreDeUsuario = styled.span`
-	color: rgba(0, 0, 0, 1);
-	text-overflow: ellipsis;
+const NombreDeUsuario = styled.select`
+background: rgba(196, 196, 196, 1);
+text-overflow: ellipsis;
 	font-size: 35px;
 	font-family: Roboto, sans-serif;
 	font-weight: 400;
@@ -97,6 +169,8 @@ const NombreDeUsuario = styled.span`
 	position: absolute;
 	left: 494px;
 	top: 196px;
+	width: 490px;
+
 `;
 
 const Ellipse1 = styled.div`
@@ -119,7 +193,7 @@ const Line1 = styled.div`
 	transform: rotate(217deg);
 `;
 
-const DineroDelUsuario123436 = styled.span`
+const DineroDelUsuario = styled.span`
 	color: rgba(0, 0, 0, 1);
 	text-overflow: ellipsis;
 	font-size: 45px;
@@ -147,7 +221,7 @@ const Group1 = styled.div`
 	top: 0px;
 `;
 
-const Ellipse2 = styled.div`
+const RadioConsignar = styled.input`
 	width: 47px;
 	height: 47px;
 	background-color: rgba(196, 196, 196, 1);
@@ -177,7 +251,7 @@ const Group2 = styled.div`
 	top: 0px;
 `;
 
-const Ellipse2_0001 = styled.div`
+const RadioRetirar = styled.input`
 	width: 47px;
 	height: 47px;
 	background-color: rgba(196, 196, 196, 1);
@@ -219,8 +293,8 @@ const Rectangle13 = styled.div`
 	top: 648px;
 `;
 
-const _123436 = styled.span`
-	color: rgba(0, 0, 0, 1);
+const Valor = styled.input`
+background: rgba(196, 196, 196, 1);
 	text-overflow: ellipsis;
 	font-size: 45px;
 	font-family: Roboto, sans-serif;
@@ -231,7 +305,7 @@ const _123436 = styled.span`
 	top: 539px;
 `;
 
-const Valor = styled.span`
+const ValorLabel = styled.span`
 	color: rgba(0, 0, 0, 1);
 	text-overflow: ellipsis;
 	font-size: 30px;
@@ -251,8 +325,8 @@ const Rectangle10 = styled.svg`
 	top: 153px;
 `;
 
-const RealizarTransacción = styled.span`
-	color: rgba(255, 255, 255, 1);
+const RealizarTransacción = styled.button`
+	background-color: rgba(113, 107, 107, 1);
 	text-overflow: ellipsis;
 	font-size: 40px;
 	font-family: Roboto, sans-serif;
