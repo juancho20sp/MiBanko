@@ -131,6 +131,29 @@ class AccountsService{
 
         return result;
     }
+
+    async getBalanceBank(){
+
+        //database connection
+        const db= new Client(dbClient);
+        let result;
+
+        try{
+            await db.connect();
+
+            result= await db.query(`select sum(acc_balance) from db_accounts da where (acc_type = $1)`,['AHORROS']);
+
+            result= result.rows;
+        }catch(err){
+            result = {
+                message: 'Something went wrong getting balance bank'
+            }
+        }finally{
+            await db.end();
+        }
+
+        return result;
+    }
 }
 
 module.exports= AccountsService;
