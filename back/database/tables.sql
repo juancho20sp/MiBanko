@@ -27,13 +27,14 @@ CREATE TABLE IF NOT EXISTS DB_LOGIN(
 -- -----------------------------------------------------
 -- Table `DB_TRANSACTIONS`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS DB_TRANSACTIONS(
+CREATE TABLE IF NOT EXISTS DB_TRANSACTIONS_INTRA(
     TR_ID                 SERIAL              PRIMARY KEY,
     TR_DATE               DATE                NOT NULL,
     TR_DESTINY_BANK       INTEGER             NOT NULL,
     TR_DESTINY_ACCOUNT    INTEGER	          NOT NULL,
     TR_SOURCE_ACCOUNT     INTEGER             NOT NULL,
-    AMOUNT                DOUBLE PRECISION    NOT NULL
+    AMOUNT                DOUBLE PRECISION    NOT NULL,
+    ESTATUS               BOOLEAN             NOT NULL
 );
 
 

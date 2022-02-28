@@ -94,8 +94,9 @@ left: 776px;
 top: 505px;
 `;
 
-export const CrearCuentaBtn  =styled(LinkR)`
-color: rgba(255, 255, 255, 1);
+export const CrearCuentaBtn  =styled.button`
+background-color: rgba(113, 107, 107, 1);
+color:  rgba(255, 255, 255, 1);
 text-overflow: ellipsis;
 font-size: 30px;
 font-family: Roboto, sans-serif;
@@ -106,7 +107,8 @@ left: 523px;
 top: 518px;
 `;
 
-export const IngresarBtn  =styled(LinkR)`
+export const IngresarBtn  =styled.button`
+background-color: rgba(113, 107, 107, 1);
 color: rgba(255, 255, 255, 1);
 text-overflow: ellipsis;
 font-size: 30px;
