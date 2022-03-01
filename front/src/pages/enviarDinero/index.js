@@ -6,15 +6,17 @@ import Swal from "sweetalert2";
 
 
 const EnviarDinero = (userData) => {
-	let history = useNavigate();
+	const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')));
 	const [banks, setBanks] = useState([" "]);
+	const [selectedBx, setBx] = useState('');
+
 	useEffect(() => {
-		let location = 'api/v1/account';
-		axios.get(window.$dir + location + `/getAllBanks`)
+		let location = 'api/v1/banks';
+		axios.get(window.$dir + location + `/`)
 			.then((response) => {
-				console.log(Object.keys(response.data));
+				console.log(response.data);
 				let banksArray = [];
-				for (let i = 1; i < Object.keys(response.data).length; i++) {
+				for (let i = 0; i < Object.keys(response.data).length; i++) {
 					console.log("res2");
 					banksArray.push(response.data[i]);
 				}
@@ -23,67 +25,106 @@ const EnviarDinero = (userData) => {
 	}, [userData])
 
 	function handleSubmit(event) {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-		let location ='api/v1/account';
-		let body  = {
-			cantidad: data.get('cantidad'),
-			cuenta: data.get('cuenta'),
-			banco: data.get('banco'),
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		let location = 'api/v1/accounts';
+		let body = {
+			account: {
+				document_number: currentUser.usr_numdoc,
+				document_type: currentUser.usr_doctype,
+				acc_type: selectedBx
+			}
 		}
 		console.log(body);
-		axios.post(window.$dir + location + `/sendMoney`,body)
+		// axios.post(window.$dir + location + `/getAccount`, body)
+		// 	.then((response) => {
+
+		// 	})
+		if (data.get('banco') == 1) {
+			body = {
+				destiny_account: data.get('cuenta'),
+				source_acc: "Integer",
+				amount: data.get('cantidad'),
+				typeDocument: currentUser.usr_doctype,
+				numDoc: currentUser.usr_numdoc,
+				overdraw: false,
+				amount_overdraw: 0
+			}
+		} else {
+			body = {
+				cantidad: data.get('cantidad'),
+				destiny_account: data.get('cuenta'),
+				banco: data.get('banco'),
+			}
+		}
+		console.log(body);
+		axios.post(window.$dir + location + `/sendMoney`, body)
 			.then((response) => {
-			console.log(response.status);
-			console.log(response.data);
+				console.log(response.status);
+				console.log(response.data);
 				if (response.status === 200) {
 					Swal.fire(
 						'Dinero enviado correctamente',
 						'success'
-						);
+					);
 				} else {
-				Swal.fire("Something is Wrong :(!", "try again later", "error");
-				}     
+					Swal.fire("Something is Wrong :(!", "try again later", "error");
+				}
 			})
-		history('/home'); //<- TODO : Esto va dento del axios
-        //event.target.reset(); <- Limpiar formulario
-    }
+		//history('/home'); //<- TODO : Esto va dento del axios
+		//event.target.reset(); <- Limpiar formulario
+	}
 
 	return (
-        <div className='form-content'>
-        <form onSubmit={handleSubmit} className='form' noValidate>
-		<RootWrapperEnviarDinero>
-			<Polygon1 xmlns="http://www.w3.org/2000/svg">
-				<path fill="rgba(196, 196, 196, 1)" d="M22.5 0L41.9856 39L3.01443 39L22.5 0Z" />
-			</Polygon1>
-			<Rectangle5Stroke xmlns="http://www.w3.org/2000/svg">
-				<path fill="rgba(0, 0, 0, 1)" d="M624 0.821875L20 0.821875C9.50659 0.821875 1 7.81323 1 16.4375L1 509.562C1 518.187 9.50661 525.178 20 525.178L624 525.178C634.493 525.178 643 518.187 643 509.562L643 16.4375C643 7.81323 634.493 0.821875 624 0.821875ZM20 0C8.95431 0 0 7.35932 0 16.4375L0 509.562C0 518.641 8.95432 526 20 526L624 526C635.046 526 644 518.641 644 509.562L644 16.4375C644 7.35932 635.046 0 624 0L20 0Z" />
-			</Rectangle5Stroke>
-			<Rectangle5 xmlns="http://www.w3.org/2000/svg">
-				<path fill="rgba(196, 196, 196, 0.3)" d="M0 16.4375C0 7.35932 8.95431 0 20 0L624 0C635.046 0 644 7.35932 644 16.4375L644 509.562C644 518.641 635.046 526 624 526L20 526C8.95432 526 0 518.641 0 509.562L0 16.4375Z" />
-			</Rectangle5>
-			<EnviarDineroStr>
-				Enviar Dinero
-			</EnviarDineroStr>
-			<Rectangle3 />
-			<EnviarDinero_0001 > Enviar Dinero </EnviarDinero_0001 >
-			<Rectangle6 />
-			<Rectangle10 />
-			<Rectangle8 />
-			<Cantidad type="number" name="cantidad" placeholder="$" />
-			<Cuenta name="cuenta" placeholder ="Cuenta : " type="number"/>
-			<SeleccionarBanco name="banco" >
-				<option value="" hidden>seleccione un Banco</option>
-				{banks.map((element) => {
-					return (
-						<option key={element} value={element}>{element}</option>
-					);
-				})}
-			</SeleccionarBanco>
-
-		</RootWrapperEnviarDinero>
-		</form>
-	</div>
+		<div className='form-content'>
+			<form onSubmit={handleSubmit} className='form' noValidate>
+				<RootWrapperEnviarDinero>
+					<Rectangle5Stroke xmlns="http://www.w3.org/2000/svg">
+						<path fill="rgba(0, 0, 0, 1)" d="M656.944 0.821875L21.0559 0.821875C10.0085 0.821875 1.0528 7.81323 1.0528 16.4375L1.0528 509.562C1.0528 518.187 10.0085 525.178 21.0559 525.178L656.944 525.178C667.992 525.178 676.947 518.187 676.947 509.562L676.947 16.4375C676.947 7.81323 667.992 0.821875 656.944 0.821875ZM21.0559 0C9.42705 0 0 7.35932 0 16.4375L0 509.562C0 518.641 9.42707 526 21.0559 526L656.944 526C668.573 526 678 518.641 678 509.562L678 16.4375C678 7.35932 668.573 0 656.944 0L21.0559 0Z" />
+					</Rectangle5Stroke>
+					<Rectangle5 xmlns="http://www.w3.org/2000/svg">
+						<path fill="rgba(196, 196, 196, 0.3)" d="M0 16.4375C0 7.35932 9.42705 0 21.0559 0L656.944 0C668.573 0 678 7.35932 678 16.4375L678 509.562C678 518.641 668.573 526 656.944 526L21.0559 526C9.42707 526 0 518.641 0 509.562L0 16.4375Z" />
+					</Rectangle5>
+					<Polygon1 xmlns="http://www.w3.org/2000/svg">
+						<path fill="rgba(196, 196, 196, 1)" d="M22.5 0L41.9856 39L3.01443 39L22.5 0Z" />
+					</Polygon1>
+					<EnviarDineroStr>
+						Enviar Dinero
+					</EnviarDineroStr>
+					<Rectangle3 />
+					<EnviarDinero_0001 > Enviar Dinero </EnviarDinero_0001 >
+					<Rectangle6 />
+					<Rectangle10 />
+					<Rectangle8 />
+					<Cantidad type="number" name="cantidad" placeholder="$" />
+					<Cuenta name="cuenta" placeholder="Cuenta : " type="number" />
+					<SeleccionarBanco name="banco" >
+						<option value="" hidden>seleccione un Banco</option>
+						{banks.map((element, index) => {
+							return (
+								<option key={index} value={element.bnk_id}>{element.bnk_name}</option>
+							);
+						})}
+					</SeleccionarBanco>
+					<Group4>
+						<Group1>
+							<RadioAhorros name="consignar" type="radio" checked={"consignar" === selectedBx}
+								onChange={() => { setBx("consignar") }} />
+							<Ahorros>
+								Ahorros
+							</Ahorros>
+						</Group1>
+						<Group2>
+							<RadioCorriente name="retirar" type="radio" checked={"retirar" === selectedBx}
+								onChange={() => { setBx("retirar") }} />
+							<Corriente >
+								Corriente
+							</Corriente>
+						</Group2>
+					</Group4>
+				</RootWrapperEnviarDinero>
+			</form>
+		</div>
 	)
 }
 export default EnviarDinero
@@ -95,7 +136,7 @@ const RootWrapperEnviarDinero = styled.div`
 `;
 
 const Rectangle5 = styled.svg`
-	width: 644px;
+	width: 678px;
 	height: 526px;
 	position: absolute;
 	left: 433px;
@@ -137,7 +178,7 @@ const EnviarDinero_0001 = styled.button`
 `;
 
 const Rectangle6 = styled.div`
-	width: 562px;
+	width: 236px;
 	height: 70px;
 	background-color: rgba(196, 196, 196, 1);
 	border-radius: 20px;
@@ -179,13 +220,14 @@ const Rectangle9 = styled.div`
 const Cantidad = styled.input`
 	background: rgba(196, 196, 196, 1);
 	text-overflow: ellipsis;
-	font-size: 45px;
+	font-size: 35px;
 	font-family: Roboto, sans-serif;
 	font-weight: 400;
 	text-align: left;
 	position: absolute;
 	left: 480px;
 	top: 230px;
+	max-width:200px;
 `;
 
 const Cuenta = styled.input`
@@ -198,6 +240,7 @@ const Cuenta = styled.input`
 	position: absolute;
 	left: 479px;
 	top: 500px;
+	width:500px;
 `;
 
 const SeleccionarBanco = styled.select`
@@ -210,6 +253,7 @@ const SeleccionarBanco = styled.select`
 	position: absolute;
 	left: 483px;
 	top: 369px;
+	width:500px;
 `;
 
 const Polygon1 = styled.svg`
@@ -222,10 +266,78 @@ const Polygon1 = styled.svg`
 `;
 
 const Rectangle5Stroke = styled.svg`
-	width: 644px;
+	width: 678px;
 	height: 526px;
 	position: absolute;
 	left: 433px;
 	top: 191px;
+`;
+
+const Group4 = styled.div`
+	width: 380px;
+	height: 82px;
+	position: absolute;
+	left: 726px;
+	top: 233px;
+`;
+
+const Group1 = styled.div`
+	width: 182px;
+	height: 82px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+`;
+
+const RadioAhorros = styled.input`
+	width: 36px;
+	height: 39px;
+	background-color: rgba(196, 196, 196, 1);
+	border-radius: 19px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+`;
+
+const Ahorros = styled.span`
+	color: rgba(0, 0, 0, 1);
+	text-overflow: ellipsis;
+	font-size: 30px;
+	font-family: Roboto, sans-serif;
+	font-weight: 400;
+	text-align: left;
+	position: absolute;
+	left: 41px;
+	top: 5px;
+`;
+
+const Group2 = styled.div`
+	width: 198px;
+	height: 48px;
+	position: absolute;
+	left: 182px;
+	top: 0px;
+`;
+
+const RadioCorriente = styled.input`
+	width: 36px;
+	height: 39px;
+	background-color: rgba(196, 196, 196, 1);
+	border-radius: 19px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+`;
+
+const Corriente = styled.span`
+	color: rgba(0, 0, 0, 1);
+	text-overflow: ellipsis;
+	font-size: 30px;
+	font-family: Roboto, sans-serif;
+	font-weight: 400;
+	text-align: left;
+	position: absolute;
+	left: 46px;
+	top: 5px;
 `;
 

@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { Link as LinkR } from 'react-router-dom';
 import axios from 'axios';
 export function MenuAdmin () {
-	const [ totalBalance, setTotalBalance] = useState(0);
+	const [ totalBalance, setTotalBalance] = useState('Loading..');
 	useEffect(() => {
-	  let location = 'api/v1/account';
-		  axios.post(window.$dir+location+`/getTotalBalance`)
+	  let location = 'api/v1/accounts';
+		  axios.get(window.$dir+location+`/getBalanceBank`)
 			  .then((response) => {
-				  if(response && response.balance){
-					  setTotalBalance(0)
+				  if(response && response.data[0].sum){
+					  setTotalBalance(response.data[0].sum)
 				  }
 			  })
 	  }, [])
@@ -44,7 +44,7 @@ export function MenuAdmin () {
   <ModificarDineroDeUsuario to={'/modificarDinero'}>
       Modificar dinero de usuario
     </ModificarDineroDeUsuario>
-  <AutorizarSobregiros to={'/'}>
+  <AutorizarSobregiros to={'/autorizarSobregiro'}>
       Autorizar sobregiros
     </AutorizarSobregiros>
   </RootWrapperHomeAdmin>	

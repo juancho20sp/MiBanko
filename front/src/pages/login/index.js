@@ -40,11 +40,12 @@ const Login = () => {
         }
         axios.post(window.$dir+location+`/`,body)
             .then((response) => {
-                if(response && response.token){
+                if(response.user && response.user.token){
+                    console.log(response.user);
                     localStorage.setItem('user',JSON.stringify(response));
                 }
             })
-        history("/home");// TODO -> esto va dentro del axios
+        //history("/home");// TODO -> esto va dentro del axios
         //event.target.reset();
         // TODO -> dos opciones obtener token y guardar en var global o local storage /2. loclastorage mediante fetch user by id
     }
