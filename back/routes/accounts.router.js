@@ -14,10 +14,10 @@ const service= new AccountsService();
  *    acc_type: String
  * }
  */
- router.get('/getAccount', async (req, res) => {
+ router.post('/getAccount', async (req, res) => {
     try {
       const data = req.body.account;
-  
+      console.log(req.body)
   
       const accountData = await service.getAccount(data);
   

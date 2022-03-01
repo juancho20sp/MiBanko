@@ -7,12 +7,12 @@ import {
 const MenuUsuario = (userData) => {
   const [ balance, setBalance] = useState(0);
   useEffect(() => {
-    let location = 'api/v1/account';
+    let location = 'api/v1/accounts';
     let body={
         user_doctype: userData.user_doctype,
         user_numdoc: userData.user_numdoc,
     }
-		axios.post(window.$dir+location+`/getAccountBalance`,body)
+		axios.post(window.$dir+location+`/getBalanceUser`,body)
             .then((response) => {
                 if(response && response.balance){
                     setBalance(0)

@@ -42,10 +42,25 @@ const Login = () => {
             .then((response) => {
                 if(response.user && response.user.token){
                     console.log(response.user);
-                    localStorage.setItem('user',JSON.stringify(response));
+                    //localStorage.setItem('user',JSON.stringify(response));
                 }
             })
-        //history("/home");// TODO -> esto va dentro del axios
+            let user ={
+                usr_numdoc: 11445522,
+                usr_doctype: "CC",
+                usr_name: "Richard",
+                usr_lastname: "Urrea",
+                role: "CLIENT"
+            }
+            // let user ={
+            //     usr_numdoc: 1234567,
+            //     usr_doctype: "CC",
+            //     usr_name: "Juan David",
+            //     usr_lastname: "Murillo",
+            //     role: "ADMIN"
+            // }
+            localStorage.setItem('user',JSON.stringify(user));
+            history("/home");
         //event.target.reset();
         // TODO -> dos opciones obtener token y guardar en var global o local storage /2. loclastorage mediante fetch user by id
     }

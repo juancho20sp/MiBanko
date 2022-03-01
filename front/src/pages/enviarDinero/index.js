@@ -6,8 +6,10 @@ import Swal from "sweetalert2";
 
 
 const EnviarDinero = (userData) => {
+	let history = useNavigate();
 	const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')));
 	const [banks, setBanks] = useState([" "]);
+	const [userAccount, setUserAccount] = useState([" "]);
 	const [selectedBx, setBx] = useState('');
 
 	useEffect(() => {
@@ -36,43 +38,73 @@ const EnviarDinero = (userData) => {
 			}
 		}
 		console.log(body);
-		// axios.post(window.$dir + location + `/getAccount`, body)
-		// 	.then((response) => {
-
-		// 	})
+		axios.post(window.$dir + location + `/getAccount`, body)
+			.then((response) => {
+				setUserAccount(response.data[0]);
+			}
+		)
+		//event.target.reset(); <- Limpiar formulario
 		if (data.get('banco') == 1) {
 			body = {
-				destiny_account: data.get('cuenta'),
-				source_acc: "Integer",
-				amount: data.get('cantidad'),
-				typeDocument: currentUser.usr_doctype,
-				numDoc: currentUser.usr_numdoc,
-				overdraw: false,
-				amount_overdraw: 0
+				transactionIntra: {
+					destiny_account: Number(data.get('cuenta')),
+					source_acc: Number(userAccount.acc_number),
+					amount: Number(data.get('cantidad')),
+					typeDocument: currentUser.usr_doctype,
+					numDoc: currentUser.usr_numdoc,
+					overdraw: false,
+					amount_overdraw: 0
+				}
 			}
+			console.log(body);
+			axios.post(window.$dir + `api/v1/transactions/createTransactionIntra`, body)
+				.then((response) => {
+					console.log(response.status);
+					console.log(response.data);
+					if (response.status === 200) {
+						Swal.fire(
+							'Dinero enviado correctamente',
+							'success'
+						);
+						history('/home');
+						event.target.reset();
+					} else {
+						Swal.fire("Something is Wrong :(!", "try again later", "error");
+					}
+
+				})
 		} else {
 			body = {
-				cantidad: data.get('cantidad'),
-				destiny_account: data.get('cuenta'),
-				banco: data.get('banco'),
+				transactionInter:{
+					tr_destiny_bank: Number(data.get('banco')),
+					tr_destiny_acc: Number(data.get('cuenta')),
+					tr_source_acc:Number(userAccount.acc_number),
+					tr_destiny_receiver_name: "String",
+					tr_destiny_receiver_lastName: "String",
+					tr_destiny_receiver_typeDoc: "String" ,
+					tr_destiny_receiver_docNum: 0,
+					amount: Number(data.get('cantidad')),
+					overdraw: false,
+					amount_overdraw: 0
+					}
 			}
-		}
-		console.log(body);
-		axios.post(window.$dir + location + `/sendMoney`, body)
-			.then((response) => {
-				console.log(response.status);
-				console.log(response.data);
-				if (response.status === 200) {
-					Swal.fire(
-						'Dinero enviado correctamente',
-						'success'
-					);
-				} else {
-					Swal.fire("Something is Wrong :(!", "try again later", "error");
-				}
-			})
-		//history('/home'); //<- TODO : Esto va dento del axios
-		//event.target.reset(); <- Limpiar formulario
+			console.log(body);
+			axios.post(window.$dir + `api/v1/transactions/createTransactionInter`, body)
+				.then((response) => {
+					console.log(response.status);
+					console.log(response.data);
+					if (response.status === 200) {
+						Swal.fire(
+							'Dinero enviado correctamente',
+							'success'
+						);
+					history('/home');
+					event.target.reset();
+					} else {
+						Swal.fire("Something is Wrong :(!", "try again later", "error");
+					}
+				})
+			}
 	}
 
 	return (
@@ -108,15 +140,15 @@ const EnviarDinero = (userData) => {
 					</SeleccionarBanco>
 					<Group4>
 						<Group1>
-							<RadioAhorros name="consignar" type="radio" checked={"consignar" === selectedBx}
-								onChange={() => { setBx("consignar") }} />
+							<RadioAhorros name="Ahorros" type="radio" checked={"AHORROS" === selectedBx}
+								onChange={() => { setBx("AHORROS") }} />
 							<Ahorros>
 								Ahorros
 							</Ahorros>
 						</Group1>
 						<Group2>
-							<RadioCorriente name="retirar" type="radio" checked={"retirar" === selectedBx}
-								onChange={() => { setBx("retirar") }} />
+							<RadioCorriente name="Corriente" type="radio" checked={"CORRIENTE" === selectedBx}
+								onChange={() => { setBx("CORRIENTE") }} />
 							<Corriente >
 								Corriente
 							</Corriente>
