@@ -18,8 +18,8 @@ const CrearCuenta = () => {
 			user_name: data.get('user_name'),
 			user_lastname: data.get('user_lastname'),
 			document_type: data.get('document_type'),
-			document_number: data.get('document_number'),
-			role: "USER"
+			document_number: Number(data.get('document_number')),
+			role: "CLIENT"
 			//,username: data.get('username'),
 			//email:  data.get('email'),
 			//password:  data.get('password'),
@@ -30,7 +30,7 @@ const CrearCuenta = () => {
         .then( function (response) {
 			console.log(response.status);
 			console.log(response.data);
-			if (response.status === 204) {
+			if (response.status === 200) {
 				Swal.fire(
 					'Creado correctamente',
 					'success'
