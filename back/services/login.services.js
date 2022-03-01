@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const {
@@ -51,7 +52,31 @@ class LoginService {
         })
       })
     })
+  }
 
+  async getUserLogin(email, password) {
+    // Create DB connection
+    const db = new Client(dbClient);
+    let result;
+
+    try {
+      await db.connect();
+
+      const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+
+      result = await db.query(`SELECT * FROM DB_LOGIN WHERE usr_email = $1 and usr_password = $2`, [email, passwordHash]);
+
+      result = result.rows[0];
+
+    } catch(err) {
+      result = {
+        message: 'Something went wrong'
+      }
+    } finally {
+      await db.end();
+    }
+
+    return result;
   }
 }
 

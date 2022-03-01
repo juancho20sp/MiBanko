@@ -32,10 +32,17 @@ router.post('/createUser', async (req, res) => {
   try {
     const data = req.body.user;
 
-
     const userData = await service.createUser(data);
+    const loginData = await service.createLogin(data);
 
-    res.status(200).json(userData);
+    const result = {
+      ...userData,
+      ...loginData
+    }
+
+    delete result.password;
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(500).json({
       message: 'Something went wrong on the server'

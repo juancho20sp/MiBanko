@@ -6,80 +6,82 @@ import Swal from "sweetalert2";
 import axios from 'axios';
 
 const CrearCuenta = () => {
-    let history = useNavigate();
-	const handleSubmit =(event) =>{
+	let history = useNavigate();
+	const handleSubmit = (event) => {
 		event.preventDefault();
 		let location = "api/v1/users";
-        //
-        const data = new FormData(event.currentTarget);
+		//
+		const data = new FormData(event.currentTarget);
 		//fetch
-		let body ={}
-		body={
-			user_name: data.get('user_name'),
-			user_lastname: data.get('user_lastname'),
-			document_type: data.get('document_type'),
-			document_number: data.get('document_number'),
-			role: "USER"
-			//,username: data.get('username'),
-			//email:  data.get('email'),
-			//password:  data.get('password'),
-			//confirm_password:  data.get('confirm_password')
+		let body = {}
+		body = {
+			user: {
+				user_name: data.get('user_name'),
+				user_lastname: data.get('user_lastname'),
+				document_type: data.get('document_type'),
+				document_number: Number(data.get('document_number')),
+				role: "CLIENT",
+				username: data.get('username'),
+				email:  data.get('email'),
+				password:  data.get('password')
+			}
 		}
+
 		console.log(body)
-        axios.post(window.$dir+location+`/createUser`, body)
-        .then( function (response) {
-			console.log(response.status);
-			console.log(response.data);
-			if (response.status === 204) {
-				Swal.fire(
-					'Creado correctamente',
-					'success'
+		axios.post(window.$dir + location + `/createUser`, body)
+			.then(function (response) {
+				console.log(response.status);
+				console.log(response.data);
+				if (response.status === 200) {
+					Swal.fire(
+						'Creado correctamente',
+						'success'
 					);
-			} else {
-			Swal.fire("Something is Wrong :(!", "try again later", "error");
-			}     
-		})
-        //
-        //event.target.reset();
-    }
-    return (
+				} else {
+					Swal.fire("Something is Wrong :(!", "try again later", "error");
+				}
+			})
+		//
+		//event.target.reset();
+	}
+	return (
 		<div className='form-content'>
-        <form onSubmit={handleSubmit} className='form' noValidate>
-        <RootWrapperCrearCuenta>
-            <Rectangle5 />
-            <CrearUsuario>
-                Crear usuario
-            </CrearUsuario>
-            <Rectangle1 />
-            <Rectangle10 />
-            <Rectangle7 />
-            <Rectangle8 />
-            <Rectangle6 />
-            <Rectangle11 />
-            <Rectangle2 />
-            <Rectangle9 />
-            <Nombre name="user_name" placeholder="Nombre"/>
-            <TipoDeDocumento name="document_type" placeholder="TipoDeDocumento">
-					<option value="" hidden>Tipo</option>
-					<option value="CC">C.C</option>
-					<option value="TI">T.I</option>
-					<option value="CE">C.E</option>
-					<option value="PS">P.S</option>
-			</TipoDeDocumento>
-            <Usuario name="username" placeholder="Usuario"/>
-            <Email name="email" placeholder="Email"/>
-            <Apellido name="user_lastname" placeholder="Apellido"/>
-            <NúmeroDeDocumento name="document_number" placeholder="NúmeroDeDocumento" type="number"/>
-            <Contraseña  name="password" placeholder="Contraseña" type="password"/>
-            <ConfirmarContraseña name="confirm_password" placeholder="ConfirmarContraseña" type="password"/>
-            <Rectangle3 />
-            <CrearCuentaBtn >
-                Crear cuenta
-            </CrearCuentaBtn>
-        </RootWrapperCrearCuenta>
-	</form>
-	</div>	
-    )
+			<form onSubmit={handleSubmit} className='form' noValidate>
+				<RootWrapperCrearCuenta>
+					<Rectangle5 />
+					<CrearUsuario>
+						Crear usuario
+					</CrearUsuario>
+					<Rectangle1 />
+					<Rectangle10 />
+					<Rectangle7 />
+					<Rectangle8 />
+					<Rectangle6 />
+					<Rectangle11 />
+					<Rectangle2 />
+					<Rectangle9 />
+					<Nombre name="user_name" placeholder="Nombre" />
+					<TipoDeDocumento name="document_type" placeholder="TipoDeDocumento">
+						<option value="" hidden>Tipo</option>
+						<option value="CC">C.C</option>
+						<option value="TI">T.I</option>
+						<option value="CE">C.E</option>
+						<option value="PS">P.S</option>
+					</TipoDeDocumento>
+					<Usuario name="username" placeholder="Usuario" />
+					<Email name="email" placeholder="Email" />
+					<Apellido name="user_lastname" placeholder="Apellido" />
+					<NúmeroDeDocumento name="document_number" placeholder="NúmeroDeDocumento" type="number" />
+					<Contraseña name="password" placeholder="Contraseña" type="password" />
+					<ConfirmarContraseña name="confirm_password" placeholder="ConfirmarContraseña" type="password" />
+					<Rectangle3 />
+					<CrearCuentaBtn >
+						Crear cuenta
+					</CrearCuentaBtn>
+				</RootWrapperCrearCuenta>
+			</form>
+		</div>
+	)
 }
 export default CrearCuenta
 const RootWrapperCrearCuenta = styled.div`
@@ -298,7 +300,7 @@ const Rectangle3 = styled.div`
 	top: 763px;
 `;
 
-const CrearCuentaBtn  =styled.button`
+const CrearCuentaBtn = styled.button`
 	background-color: rgba(113, 107, 107, 1);
 	color:  rgba(255, 255, 255, 1);
 	text-overflow: ellipsis;

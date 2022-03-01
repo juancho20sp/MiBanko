@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 require('dotenv').config();
 
@@ -26,7 +25,6 @@ class UserService {
         user_lastname,
         role,
       } = userData;
-
 
       const creationDate = new Date().toISOString().slice(0, 10);
 
@@ -80,8 +78,6 @@ class UserService {
 
 
     } catch(err) {
-      console.log(err)
-
       result = {
         message: 'Something went wrong'
       }
@@ -104,6 +100,29 @@ class UserService {
       result = await db.query(`SELECT * FROM DB_USERS`);
 
       result = result.rows;
+
+    } catch(err) {
+      result = {
+        message: 'Something went wrong'
+      }
+    } finally {
+      await db.end();
+    }
+
+    return result;
+  }
+
+  async getUser(documentType, documentNumber) {
+    // Create DB connection
+    const db = new Client(dbClient);
+    let result;
+
+    try {
+      await db.connect();
+
+      result = await db.query(`SELECT * FROM DB_USERS WHERE usr_doctype = $1 AND usr_numdoc = $2`, [documentType, documentNumber]);
+
+      result = result.rows[0];
 
     } catch(err) {
       result = {
