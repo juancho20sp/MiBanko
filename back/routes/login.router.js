@@ -36,20 +36,7 @@ router.post('/', async (req, res) => {
       ...userData
     }
 
-
-    // // SIMULAR RESPUESTA DE LA BD
-    // const user = {
-    //   // TODO lo del LOGIN (menos la contraseña)
-    //   // DB_USER (name, lastname, role)
-    //   documentNumber: 123456,
-    //   documentType: 'CC',
-    //   username: 'juancho20sp',
-    //   email: 'juan@email.com',
-    //   name: 'Juan David',
-    //   lastname: 'Murillo',
-    //   role: 'ADMIN' // TODO -> cuadrar en el back guardarlo en mayúscula
-    // }
-
+    delete finalData.usr_password
 
     const userToken = await service.createToken(finalData);
 
