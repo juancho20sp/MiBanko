@@ -2,7 +2,8 @@ const express = require('express');
 
 const {
   loginRouter,
-  userRouter
+  userRouter,
+  transactionsRouter
 } = require('./routers');
 
 function router(app) {
@@ -12,7 +13,8 @@ function router(app) {
   app.use('/api/v1', router);
 
   router.use('/login', loginRouter);
-  router.use('/users', userRouter)
+  router.use('/users', userRouter);
+  router.use('/transactions', transactionsRouter);
 }
 
 module.exports = router;
