@@ -32,6 +32,10 @@ router.post('/createUser', async (req, res) => {
   try {
     const data = req.body.user;
 
+    // $
+    console.log(req.body);
+
+
 
     const userData = await service.createUser(data);
 

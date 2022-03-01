@@ -26,7 +26,6 @@ class UserService {
         role,
       } = userData;
 
-
       const creationDate = new Date().toISOString().slice(0, 10);
 
       result = await db.query(`INSERT INTO DB_USERS(USR_NUMDOC, USR_DOCTYPE, USR_NAME, USR_LASTNAME, USR_ROLE, USR_BIRTHDATE, USR_CREATION_DATE) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`, [document_number,
@@ -38,6 +37,20 @@ class UserService {
         creationDate]);
 
       result = result.rows[0];
+
+      const loginData = await this.createLogin(userData);
+
+      result = {
+        ...result,
+        ...loginData
+      }
+
+      delete loginData.password;
+
+
+
+      // $
+      console.log(result);
 
     } catch(err) {
       result = {
