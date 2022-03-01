@@ -38,20 +38,6 @@ class UserService {
 
       result = result.rows[0];
 
-      const loginData = await this.createLogin(userData);
-
-      result = {
-        ...result,
-        ...loginData
-      }
-
-      delete loginData.password;
-
-
-
-      // $
-      console.log(result);
-
     } catch(err) {
       result = {
         message: 'Something went wrong'
