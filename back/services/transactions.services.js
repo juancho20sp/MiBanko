@@ -30,14 +30,17 @@ class TransctionsService{
       const creationDate = new Date().toISOString().slice(0, 10);
       const destiny_bank=1;
 
-      let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
-        ndoc,
+      // let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
+      //   ndoc,
+      //   destiny_account
+      // ]);
+      let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND ACC_NUMBER=($2)`, [tdoc,
         destiny_account
       ]);
-
       let source = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE ACC_NUMBER=($1)`, [source_acc]);
 
       source=source.rows[0];
+          console.log(typeof(amount));
 
       if(destiny.rowCount>0){
 

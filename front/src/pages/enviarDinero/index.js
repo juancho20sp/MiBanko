@@ -65,8 +65,8 @@ const EnviarDinero = (userData) => {
 					console.log(res[0])
 					let body = {
 						transactionIntra: {
-							destiny_account: Number(data.get('cuenta')),
-							source_acc: Number(res[0].acc_number),
+							destiny_account: data.get('cuenta'),
+							source_acc: res[0].acc_number,
 							amount: Number(data.get('cantidad')),
 							typeDocument: currentUser.usr_doctype,
 							numDoc: currentUser.usr_numdoc,
@@ -74,6 +74,7 @@ const EnviarDinero = (userData) => {
 							amount_overdraw: 0
 						}
 					}
+					console.log(body)
 					axios.post(window.$dir + `api/v1/transactions/createTransactionIntra`, body)
 						.then((response) => {
 							console.log(response.status);
