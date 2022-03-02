@@ -4,18 +4,20 @@ import {
   RootWrapperHomeUsuario, VerMisMovimientosBtn, EnviarDineroBtn, TodoMiDinero, MenúPrincipal, SobregirarBtn,
   Rectangle3, Rectangle5, Rectangle6, Rectangle7,Rectangle8, Rectangle5Stroke, Salir
 } from './menuPrincipalElements.js';
-const MenuUsuario = (userData) => {
+const MenuUsuario = ({userData}) => {
   const [ balance, setBalance] = useState(0);
   useEffect(() => {
-    let location = 'api/v1/accounts';
+    let location = 'api/v1/users';
     let body={
-        user_doctype: userData.user_doctype,
-        user_numdoc: userData.user_numdoc,
+        usr_doctype: userData.usr_doctype,
+        usr_numdoc: userData.usr_numdoc
     }
-		axios.post(window.$dir+location+`/getBalanceUser`,body)
+    console.log(body)
+		axios.post(window.$dir+location+`/getUserBalance`,body)
             .then((response) => {
-                if(response && response.balance){
-                    setBalance(0)
+              console.log(response.data)
+                if(response.data && response.data.acc_balance){
+                    setBalance(response.data.acc_balance)
                 }
             })
 	}, [userData])

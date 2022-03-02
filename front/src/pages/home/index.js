@@ -7,7 +7,7 @@ const Home = () => {
     return (
        <div>
             {/* { currentUser && currentUser.rol=="ADMIN"?<MenuAdmin/>:<MenuUsuario />} */}
-           { currentUser && currentUser.rol!="ADMIN"?<MenuUsuario/>:< MenuAdmin/>}
+           { currentUser && currentUser.rol!="ADMIN"?<MenuUsuario userData={currentUser}/>:< MenuAdmin/>}
        </div>
     )
 }

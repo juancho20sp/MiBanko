@@ -19,7 +19,7 @@ router.get('/getAllUsers', async(req, res) => {
   }
 })
 
-router.get('/getUserBalance', async(req, res) => {
+router.post('/getUserBalance', async(req, res) => {
   try {
     const {
       usr_doctype,

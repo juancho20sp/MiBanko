@@ -26,6 +26,19 @@ const EnviarDinero = (userData) => {
 			})
 	}, [userData])
 
+	useEffect(() => {
+		let location = 'api/v1/banks';
+		axios.get(window.$dir + location + `/`)
+			.then((response) => {
+				console.log(response.data);
+				let banksArray = [];
+				for (let i = 0; i < Object.keys(response.data).length; i++) {
+					console.log("res2");
+					banksArray.push(response.data[i]);
+				}
+				setBanks(banksArray);
+			})
+	}, [userAccount])
 	function handleSubmit(event) {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
@@ -40,71 +53,78 @@ const EnviarDinero = (userData) => {
 		console.log(body);
 		axios.post(window.$dir + location + `/getAccount`, body)
 			.then((response) => {
-				setUserAccount(response.data[0]);
+				if(response.data ){
+					console.log(response.data)
+
+					return response.data;
+				}
+			}
+		).then(
+			res =>{
+				if (data.get('banco') == 1 ){
+					console.log(res[0])
+					let body = {
+						transactionIntra: {
+							destiny_account: Number(data.get('cuenta')),
+							source_acc: Number(res[0].acc_number),
+							amount: Number(data.get('cantidad')),
+							typeDocument: currentUser.usr_doctype,
+							numDoc: currentUser.usr_numdoc,
+							overdraw: false,
+							amount_overdraw: 0
+						}
+					}
+					axios.post(window.$dir + `api/v1/transactions/createTransactionIntra`, body)
+						.then((response) => {
+							console.log(response.status);
+							console.log(response.data);
+							if (response.status === 200) {
+								Swal.fire(
+									'Dinero enviado correctamente',
+									'success'
+								);
+								// history('/home');
+								// event.target.reset();
+							} else {
+								Swal.fire("Something is Wrong :(!", "try again later", "error");
+							}
+		
+							})
+			} if (data.get('banco') != 1) {
+				body = {
+					transactionInter:{
+						tr_destiny_bank: Number(data.get('banco')),
+						tr_destiny_acc: Number(data.get('cuenta')),
+						tr_source_acc: Number(res[0].acc_number),
+						tr_destiny_receiver_name: "OtroUsuario",
+						tr_destiny_receiver_lastName: "OtroUsuario",
+						tr_destiny_receiver_typeDoc: "OtroUsuario" ,
+						tr_destiny_receiver_docNum: 0,
+						amount: Number(data.get('cantidad')),
+						overdraw: false,
+						amount_overdraw: 0
+						}
+				}
+				console.log(body);
+				axios.post(window.$dir + `api/v1/transactions/createTransactionInter`, body)
+					.then((response) => {
+						console.log(response.status);
+						console.log(response.data);
+						if (response.status === 200) {
+							Swal.fire(
+								'Dinero enviado correctamente',
+								'success'
+							);
+						history('/home');
+						event.target.reset();
+						} else {
+							Swal.fire("Something is Wrong :(!", "try again later", "error");
+						}
+					})
+				}
 			}
 		)
 		//event.target.reset(); <- Limpiar formulario
-		if (data.get('banco') == 1) {
-			body = {
-				transactionIntra: {
-					destiny_account: Number(data.get('cuenta')),
-					source_acc: Number(userAccount.acc_number),
-					amount: Number(data.get('cantidad')),
-					typeDocument: currentUser.usr_doctype,
-					numDoc: currentUser.usr_numdoc,
-					overdraw: false,
-					amount_overdraw: 0
-				}
-			}
-			console.log(body);
-			axios.post(window.$dir + `api/v1/transactions/createTransactionIntra`, body)
-				.then((response) => {
-					console.log(response.status);
-					console.log(response.data);
-					if (response.status === 200) {
-						Swal.fire(
-							'Dinero enviado correctamente',
-							'success'
-						);
-						history('/home');
-						event.target.reset();
-					} else {
-						Swal.fire("Something is Wrong :(!", "try again later", "error");
-					}
-
-				})
-		} else {
-			body = {
-				transactionInter:{
-					tr_destiny_bank: Number(data.get('banco')),
-					tr_destiny_acc: Number(data.get('cuenta')),
-					tr_source_acc:Number(userAccount.acc_number),
-					tr_destiny_receiver_name: "String",
-					tr_destiny_receiver_lastName: "String",
-					tr_destiny_receiver_typeDoc: "String" ,
-					tr_destiny_receiver_docNum: 0,
-					amount: Number(data.get('cantidad')),
-					overdraw: false,
-					amount_overdraw: 0
-					}
-			}
-			console.log(body);
-			axios.post(window.$dir + `api/v1/transactions/createTransactionInter`, body)
-				.then((response) => {
-					console.log(response.status);
-					console.log(response.data);
-					if (response.status === 200) {
-						Swal.fire(
-							'Dinero enviado correctamente',
-							'success'
-						);
-					history('/home');
-					event.target.reset();
-					} else {
-						Swal.fire("Something is Wrong :(!", "try again later", "error");
-					}
-				})
-			}
 	}
 
 	return (
