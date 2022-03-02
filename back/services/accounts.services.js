@@ -28,7 +28,7 @@ class AccountsService{
 
             const creationDate = new Date().toISOString().slice(0, 10);
 
-            result = await db.query(`INSERT INTO DB_ACCOUNTS(ACC_NUMBER, ACC_CREATION_DATE, ACC_BALANCE, ACC_TYPE, USR_NUMDOC, USR_DOCTYPE) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, 
+            result = await db.query(`INSERT INTO DB_ACCOUNTS(ACC_NUMBER, ACC_CREATION_DATE, ACC_BALANCE, ACC_TYPE, USR_NUMDOC, USR_DOCTYPE) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
             [acc_number,
             creationDate,
             acc_balance,
@@ -48,8 +48,8 @@ class AccountsService{
 
         return result;
     }
-      
-      
+
+
     async getAccount(accountData){
         const db= new Client(dbClient);
         let result;

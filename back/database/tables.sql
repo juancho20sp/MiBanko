@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS DB_TRANSACTIONS_INTER (
     TR_DESTINY_RECIVER_TYPEDOC      VARCHAR(4)          NOT NULL,
     TR_DESTINY_RECIVER_DOCNUM       INTEGER             NOT NULL,
     AMOUNT                          DOUBLE PRECISION    NOT NULL
-    
+
 );
 
 -- -----------------------------------------------------
@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS DB_ACCOUNTS(
     ACC_CREATION_DATE      	DATE                NOT NULL,
     ACC_BALANCE            	DOUBLE PRECISION    NOT NULL,
     ACC_TYPE               	VARCHAR(75)         NOT NULL, -- TODO -> Crear un check para este tipo de dato ('AHORROS', 'CORRIENTE')
-    USR_DOCTYPE				VARCHAR(4)	        NOT NULL,
-    USR_NUMDOC              INTEGER     		NOT NULL  -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
+    USR_DOCTYPE				      VARCHAR(4)	        NOT NULL,
+    USR_NUMDOC              INTEGER     		    NOT NULL  -- TODO -> Crear un check para que inicie con ("CC", "TI", "CE", "PS") (puede ser en el back)
 );
 
 -- -----------------------------------------------------
