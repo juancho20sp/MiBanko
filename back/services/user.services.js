@@ -135,8 +135,27 @@ class UserService {
     return result;
   }
 
+  async getUserBalance(documentType, documentNumber) {
+    //database connection
+    const db= new Client(dbClient);
+    let result;
 
+    try{
+        await db.connect();
 
+        result= await db.query(`SELECT acc_balance FROM DB_ACCOUNTS WHERE USR_DOCTYPE = $1 AND USR_NUMDOC = $2`, [documentType, documentNumber]);
+
+        result= result.rows[0];
+    }catch(err){
+        result = {
+            message: 'Something went wrong getting balance bank'
+        }
+    }finally{
+        await db.end();
+    }
+
+    return result;
+  }
 }
 
 module.exports = UserService;
