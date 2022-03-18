@@ -30,21 +30,18 @@ class TransctionsService{
       const creationDate = new Date().toISOString().slice(0, 10);
       const destiny_bank=1;
 
-      // let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND USR_NUMDOC=($2) AND ACC_NUMBER=($3)`, [tdoc,
-      //   ndoc,
-      //   destiny_account
-      // ]);
       let destiny = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE USR_DOCTYPE=($1) AND ACC_NUMBER=($2)`, [tdoc,
         destiny_account
       ]);
+
       let source = await db.query(`SELECT acc_id FROM DB_ACCOUNTS WHERE ACC_NUMBER=($1)`, [source_acc]);
 
       source=source.rows[0];
-          console.log(typeof(amount));
 
       if(destiny.rowCount>0){
 
         destiny= destiny.rows[0];
+
 
         if(overdraw){
           const status ="PENDIENTE";
@@ -77,10 +74,10 @@ class TransctionsService{
             status
           ]);
 
-          await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance-($1) WHERE acc_id=($2)`, [amount,
+          await db.query(`UPDATE DB_ACCOUNTS SET acc_balance= (acc_balance-($1)) WHERE acc_id=($2)`, [amount,
             source.acc_id
           ]);
-          await db.query(`UPDATE DB_ACCOUNTS SET acc_balance=acc_balance+($1) WHERE acc_id=($2)`, [amount,
+          await db.query(`UPDATE DB_ACCOUNTS SET acc_balance= (acc_balance+($1)) WHERE acc_id=($2)`, [amount,
             destiny.acc_id
           ]);
           result = result.rows[0];
@@ -88,7 +85,6 @@ class TransctionsService{
       }
 
     } catch(err) {
-      console.log(err)
       result = {
         message: 'Something went wrong database'
       }
@@ -127,9 +123,7 @@ class TransctionsService{
 
       source = source.rows[0];
 
-      console.log('aaaaaa')
       if(overdraw){
-        console.log('bbbbbb')
         const status ="PENDIENTE";
         const tasaction_type ="INTER";
         const status_overdraw = null;
@@ -146,7 +140,6 @@ class TransctionsService{
           amount,
           status
         ]);
-        console.log('cccccc')
         result=result.rows[0];
         await db.query(`INSERT INTO db_overdraws(ovd_creation_date, ovd_is_authorized, amount, tr_type, tr_id) VALUES($1, $2, $3, $4, $5) RETURNING *`, [
           creationDate,
@@ -341,26 +334,20 @@ class TransctionsService{
     let result;
     const{estado, id_overdraw}=data;
     try {
-      console.log(estado);
-      console.log(id_overdraw);
       await db.connect();
 
       result = await db.query(`UPDATE db_overdraws SET ovd_is_authorized=($1) WHERE ovd_id=($2) RETURNING *`,[estado,id_overdraw]);
       result = result.rows[0];
       if(estado){
         let estatus="APROBADA";
-        console.log("ss");
         if(result.tr_type==="INTER"){
           let transaccion = await db.query(`UPDATE db_transactions_inter SET estatus=($1) WHERE tr_id=($2) RETURNING *`,[estatus,result.tr_id]);
           transaccion=transaccion.rows[0];
           await db.query(`UPDATE db_accounts SET acc_balance=acc_balance-($1) WHERE acc_id=($2)`,[transaccion.amount,transaccion.tr_source_account]);
         }
         else if(result.tr_type==="INTRA"){
-          console.log("qqqq");
           let transaccion = await db.query(`UPDATE db_transactions_intra SET estatus=($1) WHERE tr_id=($2) RETURNING *`,[estatus,result.tr_id]);
-          console.log("ggggg");
           transaccion=transaccion.rows[0];
-          console.log(transaccion);
           await db.query(`UPDATE db_accounts SET acc_balance=acc_balance-($1) WHERE acc_id=($2)`,[transaccion.amount,transaccion.tr_source_account]);
           await db.query(`UPDATE db_accounts SET acc_balance=acc_balance+($1) WHERE acc_id=($2)`,[transaccion.amount,transaccion.tr_destiny_account]);
         }
