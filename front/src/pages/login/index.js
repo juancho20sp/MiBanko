@@ -45,27 +45,11 @@ const Login = () => {
     };
     axios.post(window.$dir + location + `/`, body).then((response) => {
       if (response.user && response.user.token) {
-        //localStorage.setItem('user',JSON.stringify(response));
+        localStorage.setItem('user',JSON.stringify(response));
       }
     });
-    let user = {
-      usr_numdoc: 11445522,
-      usr_doctype: "CC",
-      usr_name: "Richard",
-      usr_lastname: "Urrea",
-      role: "CLIENT",
-    };
-    // let user ={
-    //     usr_numdoc: 123456,
-    //     usr_doctype: "CC",
-    //     usr_name: "Juan David",
-    //     usr_lastname: "Murillo",
-    //     role: "ADMIN"
-    // }
-    localStorage.setItem("user", JSON.stringify(user));
     history("/home");
-    //event.target.reset();
-    // TODO -> dos opciones obtener token y guardar en var global o local storage /2. loclastorage mediante fetch user by id
+    event.target.reset();
   }
 
   return (
