@@ -5,35 +5,45 @@ import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 
 
-const EnviarDinero = (userData) => {
+const EnviarDinero = ({isOverdraw}) => {
 	let history = useNavigate();
 	const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('user')));
+	const [ balance, setBalance] = useState("Cargando..");
 	const [banks, setBanks] = useState([" "]);
 	const [userAccount, setUserAccount] = useState([" "]);
 	const [selectedBx, setBx] = useState('');
+	const [amountOverdraw, setAmmountOverdraw] = useState(0);
+
 
 	useEffect(() => {
 		let location = 'api/v1/banks';
 		axios.get(window.$dir + location + `/`)
 			.then((response) => {
-				console.log(response.data);
 				let banksArray = [];
 				for (let i = 0; i < Object.keys(response.data).length; i++) {
-					console.log("res2");
 					banksArray.push(response.data[i]);
 				}
 				setBanks(banksArray);
 			})
-	}, [userData])
+		location = 'api/v1/users';
+		let body={
+			usr_doctype: currentUser.usr_doctype,
+			usr_numdoc: currentUser.usr_numdoc
+		}
+		axios.post(window.$dir+location+`/getUserBalance`,body)
+			.then((response) => {
+				if(response.data && response.data.acc_balance){
+					setBalance(response.data.acc_balance)
+				}
+			})
+	}, [])
 
 	useEffect(() => {
 		let location = 'api/v1/banks';
 		axios.get(window.$dir + location + `/`)
 			.then((response) => {
-				console.log(response.data);
 				let banksArray = [];
 				for (let i = 0; i < Object.keys(response.data).length; i++) {
-					console.log("res2");
 					banksArray.push(response.data[i]);
 				}
 				setBanks(banksArray);
@@ -42,6 +52,9 @@ const EnviarDinero = (userData) => {
 	function handleSubmit(event) {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
+		if (isOverdraw){
+			setAmmountOverdraw((data.get('cantidad'))-balance);
+		}
 		let location = 'api/v1/accounts';
 		let body = {
 			account: {
@@ -50,11 +63,9 @@ const EnviarDinero = (userData) => {
 				acc_type: selectedBx
 			}
 		}
-		console.log(body);
 		axios.post(window.$dir + location + `/getAccount`, body)
 			.then((response) => {
 				if(response.data ){
-					console.log(response.data)
 
 					return response.data;
 				}
@@ -62,30 +73,26 @@ const EnviarDinero = (userData) => {
 		).then(
 			res =>{
 				if (data.get('banco') == 1 ){
-					console.log(res[0])
 					let body = {
 						transactionIntra: {
 							destiny_account: data.get('cuenta'),
 							source_acc: res[0].acc_number,
 							amount: Number(data.get('cantidad')),
-							typeDocument: currentUser.usr_doctype,
-							numDoc: currentUser.usr_numdoc,
-							overdraw: false,
-							amount_overdraw: 0
+							tdoc: currentUser.usr_doctype,
+							ndoc: Number(currentUser.usr_numdoc),
+							overdraw: isOverdraw,
+							amount_overdraw: amountOverdraw
 						}
 					}
-					console.log(body)
 					axios.post(window.$dir + `api/v1/transactions/createTransactionIntra`, body)
 						.then((response) => {
-							console.log(response.status);
-							console.log(response.data);
 							if (response.status === 200) {
 								Swal.fire(
 									'Dinero enviado correctamente',
 									'success'
 								);
-								// history('/home');
-								// event.target.reset();
+								history('/home');
+								event.target.reset();
 							} else {
 								Swal.fire("Something is Wrong :(!", "try again later", "error");
 							}
@@ -96,21 +103,18 @@ const EnviarDinero = (userData) => {
 					transactionInter:{
 						tr_destiny_bank: Number(data.get('banco')),
 						tr_destiny_acc: Number(data.get('cuenta')),
-						tr_source_acc: Number(res[0].acc_number),
+						tr_source_acc: res[0].acc_number,
 						tr_destiny_receiver_name: "OtroUsuario",
 						tr_destiny_receiver_lastName: "OtroUsuario",
 						tr_destiny_receiver_typeDoc: "OtroUsuario" ,
 						tr_destiny_receiver_docNum: 0,
 						amount: Number(data.get('cantidad')),
-						overdraw: false,
-						amount_overdraw: 0
+						overdraw: isOverdraw,
+						amount_overdraw: amountOverdraw
 						}
 				}
-				console.log(body);
 				axios.post(window.$dir + `api/v1/transactions/createTransactionInter`, body)
 					.then((response) => {
-						console.log(response.status);
-						console.log(response.data);
 						if (response.status === 200) {
 							Swal.fire(
 								'Dinero enviado correctamente',
