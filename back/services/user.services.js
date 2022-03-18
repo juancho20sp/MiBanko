@@ -97,7 +97,7 @@ class UserService {
     try {
       await db.connect();
 
-      result = await db.query(`SELECT * FROM DB_USERS`);
+      result = await db.query(`SELECT * FROM DB_USERS INNER JOIN DB_ACCOUNTS ON DB_USERS.USR_NUMDOC = DB_ACCOUNTS.USR_NUMDOC`);
 
       result = result.rows;
 
