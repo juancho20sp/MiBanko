@@ -6,7 +6,7 @@ export const Movimientos = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('http://localhost:3000/api/v1/transactions/getTransactionsDetail',{
+      const res = await fetch( window.$dir+'api/v1/transactions/getTransactionsDetail',{
                           method: 'GET',
                           headers: {
                               'Content-Type': 'application/json'
@@ -47,6 +47,7 @@ export const Movimientos = () => {
         <div>
           <ul>
               {
+                data[0]?
                 data && data.map((item, idx)=> {
                   return <li key={idx}>
                     <p>Fecha: {item.date.split('T')[0]}</p>
@@ -55,6 +56,8 @@ export const Movimientos = () => {
                     <p>{item.source_numdoc === currentUser.usr_numdoc ? 'Enviado' : 'Recibido' }: {item.amount}</p>
                   </li>
                 })
+                :
+                <p>Cargando..</p>
               }
           </ul>
         </div>
